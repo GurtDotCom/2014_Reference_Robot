@@ -58,7 +58,7 @@ namespace TowerDefender
         }
 
             var resp = _port.ReadExisting();
-            if (resp = "updated"){ //I'm expecting a response of "updated" from the arduino
+            if (resp == "updated"){ //I'm expecting a response of "updated" from the arduino
              _updated = true;
                
             }
