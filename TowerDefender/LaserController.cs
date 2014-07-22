@@ -16,6 +16,7 @@ namespace TowerDefender
         private DateTime _lastFired = DateTime.MinValue;
         private bool _isFiring;
         private float gain = 0.5f;
+        private bool _updated;
 
         public void Connect(SerialPort port)
         {
@@ -35,8 +36,8 @@ namespace TowerDefender
             if (deltay > 0)
                 _y -= gain;
 
-            _x = Math.Min(Math.Max(_x, 0), 180);
-            _y = Math.Min(Math.Max(_y, 0), 180);
+            _x = Math.Min(Math.Max(_x, 0), 700); //range of hardware
+            _y = Math.Min(Math.Max(_y, 0), 400); //range of hardware
 
             if (shouldFire && !_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 2000)
             {
@@ -49,10 +50,18 @@ namespace TowerDefender
                 _isFiring = false;
             }
 
+        if (_updated){
             var text = String.Format("{0:000},{1:000},{2}\r\n", _x, _y, _isFiring ? 1 : 0);
             //Thread.Sleep(100);
             _port.Write(text);
+            _updated = false;
+        }
+
             var resp = _port.ReadExisting();
+            if (resp = "updated"){ //I'm expecting a response of "updated" from the arduino
+             _updated = true;
+               
+            }
         }
     }
 }
