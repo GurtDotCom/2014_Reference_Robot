@@ -67,7 +67,8 @@ namespace TowerDefender
                 var closestDistance = center.SquaredDistanceTo(closest);
                 var shouldFire = closestDistance < 20;
                 var delta = closest - center;
-                _controller.Update(delta.X, delta.Y, shouldFire);
+             //   _controller.Update(delta.X, delta.Y, shouldFire);
+                _controller.Update(closest.X, closest.Y, shouldFire); //give the absolute pixels to laser controller
 
                 var g = Graphics.FromImage(frame);
                 using (Pen p = new Pen(Color.Red))
