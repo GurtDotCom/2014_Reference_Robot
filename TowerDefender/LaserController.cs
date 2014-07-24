@@ -40,6 +40,7 @@ namespace TowerDefender
             _x = Math.Min(Math.Max(_x, 0), 350); //range of hardware
             _y = Math.Min(Math.Max(_y, 0), 200); //range of hardware
 
+    //laser timing is handled by the arduino for reliability
     
             /*
             if (shouldFire && !_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 2000)
