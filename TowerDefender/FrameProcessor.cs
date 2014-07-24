@@ -83,6 +83,8 @@ namespace TowerDefender
                 {
                     g.DrawRectangle(p, closest.X - 2, closest.Y - 2, 5, 5);
                 }
+            } else {
+            _controller.Hunt();
             }
 
             return frame;
