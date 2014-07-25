@@ -18,7 +18,7 @@ namespace TowerDefender
         private AForge.Point center = new AForge.Point(240, 160);
         private LaserController _controller;
         private BlobCounter bc;
-
+        public float thresholdValue, panFineValue, tiltFineValue, panCoarseValue, tiltCoarseValue;
         public FrameProcessor(LaserController controller)
         {
             _controller = controller;
@@ -68,7 +68,7 @@ namespace TowerDefender
                 var shouldFire = closestDistance < 20;
                 var delta = closest - center;
                 _controller.Update(delta.X, delta.Y, shouldFire);
-             //   _controller.Update(closest.X, closest.Y, shouldFire); //give the absolute pixels to laser controller
+                //   _controller.Update(closest.X, closest.Y, shouldFire); //give the absolute pixels to laser controller
 
                 var g = Graphics.FromImage(frame);
                 using (Pen p = new Pen(Color.Red))
@@ -83,8 +83,10 @@ namespace TowerDefender
                 {
                     g.DrawRectangle(p, closest.X - 2, closest.Y - 2, 5, 5);
                 }
-            } else {
-            _controller.Hunt();
+            }
+            else
+            {
+           //     _controller.Hunt();
             }
 
             return frame;
