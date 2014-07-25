@@ -11,12 +11,14 @@ namespace TowerDefender
     public class LaserController
     {
         private SerialPort _port;
-        private float _x = 150; //make this the default x position
-        private float _y = 100; //make this the default y position
-
+        private float _x = 350;
+        private float _y = 200;
         private DateTime _lastFired = DateTime.MinValue;
         private bool _isFiring;
-        private float gain, xgain, ygain = 2f;
+        private float xgain = 10f;
+      //  extern float thresholdValue, panFineValue, tiltFineValue, panCoarseValue, tiltCoarseValue;
+        private float ygain = 10f;
+        private float gain = 5f;
         private bool _updated = true;
 
         public void Connect(SerialPort port)
@@ -28,46 +30,54 @@ namespace TowerDefender
         public void Update(float deltax, float deltay, bool shouldFire)
         {
 
-            if ((deltax < 15) && (deltax > -15)) { xgain = .15f; } else { xgain = 2f; }
-            if ((deltay < 15) && (deltay > -15)) { ygain = .15f; } else { ygain = 2f; }
-
+          //  if ((deltax < Global.thresholdValue) && (deltax > (0 - Global.thresholdValue))) { xgain = Global.panFineValue; } else { xgain = Global.panCoarseValue; }
+          //  if ((deltay < Global.thresholdValue) && (deltay > (0 - Global.thresholdValue))) { ygain = Global.tiltFineValue; } else { ygain = Global.tiltCoarseValue; }
+            if ((deltax < 15) && (deltax > -15)) { xgain = 0.2f; } else { xgain = 5; }
+            if ((deltay < 15) && (deltay > -15)) { ygain = 0.2f; } else { ygain = 5; }
+            
             if (deltax > 0)
-                _x += xgain;
-            if (deltax < 0)
                 _x -= xgain;
 
+            if (deltax < 0)
+                _x += xgain;
+
             if (deltay < 0)
-                _y += ygain;
-            if (deltay > 0)
                 _y -= ygain;
 
-            _x = Math.Min(Math.Max(_x, 0), 350); //range of hardware
-            _y = Math.Min(Math.Max(_y, 0), 200); //range of hardware
+            if (deltay > 0)
+                _y += ygain;
 
-            //laser timing is handled by the arduino for reliability
+            _x = Math.Min(Math.Max(_x, 0), 2000);
+            _y = Math.Min(Math.Max(_y, 0), 2000);
 
-            /*
-            if (shouldFire && !_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 2000)
+            if (shouldFire)
             {
                 _isFiring = true;
-                _lastFired = DateTime.Now;
             }
+            else { _isFiring = false; }
 
-            if (_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 500)
-            {
-                _isFiring = false;
-            }
-            */
+            /* if (shouldFire && !_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 2000)
+             {
+                 _isFiring = true;
+                 _lastFired = DateTime.Now;
+             }
+
+             if (_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 500)
+             {
+                 _isFiring = false;
+             }
+             */
 
             if (_updated)
             {
 
-                _isFiring = true;
+                _updated = false;
                 var text = String.Format("{0:000},{1:000},{2}\r\n", _x, _y, _isFiring ? 1 : 0);
                 //Thread.Sleep(100);
                 _port.Write(text);
-                _updated = false;
             }
+
+
 
             var resp = _port.ReadExisting();
             if (resp == "updated")
@@ -78,12 +88,10 @@ namespace TowerDefender
         }
 
 
-
-
         public void Hunt()  //Cant find any targets, so hunt for them
         {
 
-            gain = 2f;
+            gain = 10f;
             bool panPlus = true;
             bool tiltPlus = true;
 
@@ -118,8 +126,8 @@ namespace TowerDefender
                 _y -= gain;
             }
 
-            _x = Math.Min(Math.Max(_x, 0), 700); //range of hardware
-            _y = Math.Min(Math.Max(_y, 0), 400); //range of hardware
+            _x = Math.Min(Math.Max(_x, 0), 1000); //range of hardware
+            _y = Math.Min(Math.Max(_y, 0), 700); //range of hardware
 
 
 
@@ -139,5 +147,6 @@ namespace TowerDefender
 
             }
         }
+
     }
 }
