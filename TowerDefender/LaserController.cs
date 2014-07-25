@@ -16,9 +16,9 @@ namespace TowerDefender
 
         private DateTime _lastFired = DateTime.MinValue;
         private bool _isFiring;
-        private float gain = 0.5f;
-        private bool _updated;
-    
+        private float gain, xgain, ygain = 2f;
+        private bool _updated = true;
+
         public void Connect(SerialPort port)
         {
             _port = port;
@@ -27,25 +27,25 @@ namespace TowerDefender
 
         public void Update(float deltax, float deltay, bool shouldFire)
         {
-            
-             if ((deltax < 15) && (deltax > -15))  { xgain = .15f; } else { xgain = 2f; }
-            if ((deltay < 15) && (deltay > -15))  { ygain = .15f; } else { ygain = 2f; }
-            
+
+            if ((deltax < 15) && (deltax > -15)) { xgain = .15f; } else { xgain = 2f; }
+            if ((deltay < 15) && (deltay > -15)) { ygain = .15f; } else { ygain = 2f; }
+
             if (deltax > 0)
-                _x += gain;
+                _x += xgain;
             if (deltax < 0)
-                _x -= gain;
+                _x -= xgain;
 
             if (deltay < 0)
-                _y += gain;
+                _y += ygain;
             if (deltay > 0)
-                _y -= gain;
+                _y -= ygain;
 
             _x = Math.Min(Math.Max(_x, 0), 350); //range of hardware
             _y = Math.Min(Math.Max(_y, 0), 200); //range of hardware
 
-    //laser timing is handled by the arduino for reliability
-    
+            //laser timing is handled by the arduino for reliability
+
             /*
             if (shouldFire && !_isFiring && (DateTime.Now - _lastFired).TotalMilliseconds > 2000)
             {
@@ -58,75 +58,85 @@ namespace TowerDefender
                 _isFiring = false;
             }
             */
-            
-        if (_updated){
-            
-            _isFiring = true;
-            var text = String.Format("{0:000},{1:000},{2}\r\n", _x, _y, _isFiring ? 1 : 0);
-            //Thread.Sleep(100);
-            _port.Write(text);
-            _updated = false;
-        }
+
+            if (_updated)
+            {
+
+                _isFiring = true;
+                var text = String.Format("{0:000},{1:000},{2}\r\n", _x, _y, _isFiring ? 1 : 0);
+                //Thread.Sleep(100);
+                _port.Write(text);
+                _updated = false;
+            }
 
             var resp = _port.ReadExisting();
-            if (resp == "updated"){ //I'm expecting a response of "updated" from the arduino
-             _updated = true;
-               
+            if (resp == "updated")
+            { //I'm expecting a response of "updated" from the arduino
+                _updated = true;
+
             }
         }
-        
-        
-        
-        
+
+
+
+
         public void Hunt()  //Cant find any targets, so hunt for them
         {
-            
-       gain = 2f;
-       bool panPlus = true;
-       bool tiltPlus = true;
-        
-            if ((_x - gain)  < 0) //set value to the minimum pan search value
-               panPlus = true;
-               
+
+            gain = 2f;
+            bool panPlus = true;
+            bool tiltPlus = true;
+
+            if ((_x - gain) < 0) //set value to the minimum pan search value
+                panPlus = true;
+
             if ((_x + gain) > 350) //set value to the maximum pan search value
                 panPlus = false;
 
             if ((_y - gain) < 0) //set value to the minimum tilt search value
                 tiltPlus = true;
-                
+
             if ((_y + gain) > 100) //set value to the maximum tilt search value
-                tiltlus = false;
-              
-              
-                if (panPlus) {
-                 _x += gain;   
-                } else {
-                 _x -= gain;     
-                }
-                
-                if (tiltPlus) {
-                 _y += gain;   
-                } else {
-                 _y -= gain;     
-                }
+                tiltPlus = false;
+
+
+            if (panPlus)
+            {
+                _x += gain;
+            }
+            else
+            {
+                _x -= gain;
+            }
+
+            if (tiltPlus)
+            {
+                _y += gain;
+            }
+            else
+            {
+                _y -= gain;
+            }
 
             _x = Math.Min(Math.Max(_x, 0), 700); //range of hardware
             _y = Math.Min(Math.Max(_y, 0), 400); //range of hardware
 
-    
 
-        if (_updated){
-          
-            _isFiring = false;
-            var text = String.Format("{0:000},{1:000},{2}\r\n", _x, _y, _isFiring ? 1 : 0);
-            //Thread.Sleep(100);
-            _port.Write(text);
-        }
+
+            if (_updated)
+            {
+
+                _isFiring = false;
+                var text = String.Format("{0:000},{1:000},{2}\r\n", _x, _y, _isFiring ? 1 : 0);
+                //Thread.Sleep(100);
+                _port.Write(text);
+            }
 
             var resp = _port.ReadExisting();
-            if (resp == "updated"){ //I'm expecting a response of "updated" from the arduino
-             _updated = true;
-               
+            if (resp == "updated")
+            { //I'm expecting a response of "updated" from the arduino
+                _updated = true;
+
             }
         }
     }
