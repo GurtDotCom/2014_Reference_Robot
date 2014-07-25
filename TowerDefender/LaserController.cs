@@ -34,7 +34,7 @@ namespace TowerDefender
           //  if ((deltay < Global.thresholdValue) && (deltay > (0 - Global.thresholdValue))) { ygain = Global.tiltFineValue; } else { ygain = Global.tiltCoarseValue; }
             if ((deltax < 15) && (deltax > -15)) { xgain = 0.2f; } else { xgain = 5; }
             if ((deltay < 15) && (deltay > -15)) { ygain = 0.2f; } else { ygain = 5; }
-            
+          /*  
             if (deltax > 0)
                 _x -= xgain;
 
@@ -46,6 +46,21 @@ namespace TowerDefender
 
             if (deltay > 0)
                 _y += ygain;
+                
+*/
+
+//try to feed the desired coords direcly instead of stepping
+            if (deltax > 0)
+                _x -= deltax;
+
+            if (deltax < 0)
+                _x += deltax;
+
+            if (deltay < 0)
+                _y -= deltay;
+
+            if (deltay > 0)
+                _y += deltay;
 
             _x = Math.Min(Math.Max(_x, 0), 2000);
             _y = Math.Min(Math.Max(_y, 0), 2000);
