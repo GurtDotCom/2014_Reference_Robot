@@ -27,6 +27,10 @@ namespace TowerDefender
 
         public void Update(float deltax, float deltay, bool shouldFire)
         {
+            
+             if ((deltax < 15) && (deltax > -15))  { xgain = .15f; } else { xgain = 2f; }
+            if ((deltay < 15) && (deltay > -15))  { ygain = .15f; } else { ygain = 2f; }
+            
             if (deltax > 0)
                 _x += gain;
             if (deltax < 0)
